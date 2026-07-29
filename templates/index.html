@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DiagramAI</title>
+
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Mermaid -->
+    <script type="module">
+        import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+        mermaid.initialize({
+    startOnLoad: true,
+    theme: "default",
+    securityLevel: "loose",
+    flowchart: {
+        useMaxWidth: false
+    }
+});
+
+        window.mermaid = mermaid;
+    </script>
+
+    <!-- html2canvas -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+    <!-- jsPDF -->
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@3.0.3/dist/jspdf.umd.min.js"></script>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>DiagramAI</h1>
+
+    <p class="subtitle">
+        AI Powered Document to Diagram Generator
+    </p>
+
+    <form id="diagramForm" method="POST" enctype="multipart/form-data">
+
+        <label>Select Document</label>
+
+        <input
+            type="file"
+            name="file"
+            required>
+
+        <label>Enter Prompt</label>
+
+        <textarea
+            name="prompt"
+            rows="5"
+            placeholder="Example: Generate a Class Diagram"
+            required>{{ prompt if prompt else "" }}</textarea>
+
+        <button
+            id="generateBtn"
+            type="submit">
+
+            🚀 Generate Diagram
+
+        </button>
+
+    </form>
+
+    <div id="loading">
+
+        🤖 AI is analyzing your document...
+        <br>
+        Please wait...
+
+    </div>
+
+    {% if success %}
+
+    <hr>
+
+    <div class="info-box">
+
+        <p><strong>File:</strong> {{ filename }}</p>
+
+        <p><strong>Prompt:</strong> {{ prompt }}</p>
+
+    </div>
+
+    <h2>Extracted Document</h2>
+
+    <pre class="output-box">{{ extracted_text }}</pre>
+
+    <h2>Generated Mermaid Code</h2>
+
+    <pre class="output-box">{{ mermaid_code }}</pre>
+
+    <h2>Generated Diagram</h2>
+    <div class="diagram-toolbar">
+
+    <button id="zoomInBtn">➕ Zoom In</button>
+
+    <button id="zoomOutBtn">➖ Zoom Out</button>
+
+    <button id="resetZoomBtn">🔄 Reset</button>
+
+    <button id="fullscreenBtn">⛶ Fullscreen</button>
+
+    <button id="copyMermaidBtn">📋 Copy Mermaid</button>
+
+    <button id="downloadMmdBtn">⬇ Download .mmd</button>
+
+</div>
+
+    <div class="diagram-card">
+
+        <div id="diagramArea">
+
+            <div class="mermaid">
+
+{{ mermaid_code }}
+
+            </div>
+
+        </div>
+
+        <div class="download-buttons">
+
+            <button
+                type="button"
+                id="downloadPNG">
+
+                PNG
+
+            </button>
+
+            <button
+                type="button"
+                id="downloadSVG">
+
+                SVG
+
+            </button>
+
+            <button
+                type="button"
+                id="downloadPDF">
+
+                PDF
+
+            </button>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+    {% if error %}
+
+        <h3 class="error">{{ error }}</h3>
+
+    {% endif %}
+
+</div>
+
+<script>
+
+document.getElementById("diagramForm").addEventListener("submit", function(){
+
+    document.getElementById("loading").style.display="block";
+
+    document.getElementById("generateBtn").disabled=true;
+
+    document.getElementById("generateBtn").innerHTML="Generating...";
+
+});
+
+</script>
+
+<script src="{{ url_for('static', filename='js/export.js') }}"></script>
+<script src="{{ url_for('static', filename='js/diagram.js') }}"></script>
+
+</body>
+
+</html>
