@@ -41,6 +41,7 @@ def home():
                 current_app.config["UPLOAD_FOLDER"],
                 uploaded_file.filename
             )
+            os.makedirs(current_app.config["UPLOAD_FOLDER"], exist_ok=True)
 
             uploaded_file.save(save_path)
 
